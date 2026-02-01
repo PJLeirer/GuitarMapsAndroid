@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">GmapAndroid</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="main_screen_title">Guitar Maps</string>
+    <string name="map_main_title">Main Map</string>
+
+    <string name="goto_main_map">Main Map</string>
+
+    <string name="lorem_ipsum">
+        Map canvas will go here
+    </string>
+    <string name="update_map_button_text">Update</string>
+
+    <string-array name="key_spinner_items">
+        <item>C</item>
+        <item>C#</item>
+        <item>D</item>
+        <item>D#</item>
+        <item>E</item>
+        <item>F</item>
+        <item>F#</item>
+        <item>G</item>
+        <item>G#</item>
+        <item>A</item>
+        <item>A#</item>
+        <item>B</item>
+    </string-array>
+
+    <string-array name="scale_spinner_items">
+        <item>Diatonic</item>
+        <item>Pentatonic</item>
+        <item>Triad</item>
+    </string-array>
+
+
+</resources>
