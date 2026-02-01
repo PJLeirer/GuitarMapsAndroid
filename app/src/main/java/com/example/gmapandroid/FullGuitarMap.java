@@ -4,12 +4,15 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class FullGuitarMap extends View {
@@ -19,11 +22,45 @@ public class FullGuitarMap extends View {
     private int height;
     private int numFrets = 22;
     private int numStrings = 6;
+    private List<List<Note>> notePositions;
+    private Fretboard mFretboard;
+
 
 
     public FullGuitarMap(Context context, Fretboard fretboard) {
         super(context);
+        mFretboard = fretboard;
+        //numFrets = fretboard.getNumFrets();
+        //numStrings = fretboard.getNumStrings();
+        //buildNotePositions();
+    }
 
+    private void buildNotePositions() {
+
+        width = getWidth();
+        height = getHeight();
+
+        // Build note objects
+        // calculate note positions before drawing
+        notePositions = new ArrayList();
+        List<List<Integer>> fb = mFretboard.getFretboard();
+
+        for(int i =0; i < numStrings; i++) {
+
+            float x = (float) (i * width / numStrings + ((width / numStrings) / 2));
+            List<Note> string = new ArrayList();
+            Log.d(":", "string: " + i);
+            for(int j =0; j < numFrets; j++) {
+                int sn = fb.get(i).get(j);
+                Log.d(":", "fret: " + j + " note: " + sn);
+
+                float y = (float) (j * height / numFrets + ((height / numFrets) / 2));
+                Note note = new Note((int)x, (int)y, sn);
+                string.add(note);
+                //Log.d(":","y:" + y);
+            }
+            notePositions.add(string);
+        }
     }
 
     @Override
@@ -75,7 +112,6 @@ public class FullGuitarMap extends View {
                 canvas.drawBitmap(fretImage, fretSrcRect, fretDestRect, paint);
             }
 
-
         }
 
         // Draw the guitar strings
@@ -86,8 +122,46 @@ public class FullGuitarMap extends View {
         }
 
 
+        buildNotePositions();
+        // draw notes
+        paint.setColor(Color.RED);
+        paint.setTextSize(12);
+        for (List<Note> string : notePositions) {
+            //Log.d("Note: ", " for each string");
+            for (Note note : string) {
+                //Log.d("Note:", "for each note X:" + note.getXPos() + " - Y:" + note.getYPos());
+                if (note.getNoteValue() > 0) {
+                    switch(note.getNoteValue()) {
+                        case 1:
+                            paint.setColor(Color.RED);
+                            break;
+                        case 2:
+                            paint.setColor(Color.YELLOW);
+                            break;
+                        case 3:
+                            paint.setColor(Color.YELLOW);
+                            break;
+                        case 4:
+                            paint.setColor(Color.MAGENTA);
+                            break;
+                        case 5:
+                            paint.setColor(Color.GREEN);
+                            break;
+                        case 6:
+                            paint.setColor(Color.MAGENTA);
+                            break;
+                        case 7:
+                            paint.setColor(Color.LTGRAY);
+                            break;
+                        default:
+                            paint.setColor(Color.BLACK);
+                            break;
+                    }
+                    canvas.drawCircle(note.getXPos(), note.getYPos(), 20, paint);
+                }
+            }
+        }
 
-
+        // end of drawing
     }
-
 }

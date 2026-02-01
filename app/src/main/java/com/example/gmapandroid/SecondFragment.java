@@ -34,7 +34,7 @@ public class SecondFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Fretboard fretboard = new Fretboard(22, 6, 0, 0);
+        Fretboard fretboard = new Fretboard(22, 6, 0, 2);
         guitarMap = new FullGuitarMap(getContext(), fretboard);
         binding.mapContainer.addView(guitarMap);
 
