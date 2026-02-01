@@ -18,6 +18,7 @@ import com.example.gmapandroid.databinding.FragmentSecondBinding;
 public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
+    private FullGuitarMap guitarMap;
 
     @Override
     public View onCreateView(
@@ -34,7 +35,7 @@ public class SecondFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Fretboard fretboard = new Fretboard(22, 6, 0, 0);
-        FullGuitarMap guitarMap = new FullGuitarMap(getContext(), fretboard);
+        guitarMap = new FullGuitarMap(getContext(), fretboard);
         binding.mapContainer.addView(guitarMap);
 
         Spinner keySPinner = view.findViewById(R.id.key_spinner);
@@ -54,7 +55,8 @@ public class SecondFragment extends Fragment {
 
     private void updateMap(int key, int scale) {
         Log.d("Main Map", "Updating map with key " + key + " and scale " + scale);
-
+        Fretboard fretboard = new Fretboard(22, 6, key, scale);
+        guitarMap = new FullGuitarMap(getContext(), fretboard);
     }
 
     @Override
