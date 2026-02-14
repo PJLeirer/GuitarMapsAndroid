@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Map Options for key and scale -->
+        <!-- Map Options for key, scale and mode TO REMOVE
         <LinearLayout
             android:id="@+id/map_options_layout"
             android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <Spinner
+             Spinner
                 android:id="@+id/key_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -41,7 +41,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/update_map_button_text" />
 
+            <Button
+                android:id="@+id/update_map_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update_map_button_text" />
         </LinearLayout>
+        -->
 
         <FrameLayout
             android:id="@+id/map_container"
@@ -51,7 +57,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/map_options_layout" />
+            app:layout_constraintTop_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

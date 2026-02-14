@@ -3,7 +3,6 @@ package com.example.gmapandroid;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,18 +23,20 @@ public class FullGuitarMap extends View {
     private int numStrings = 6;
     private int mKey = 0;
     private int mScale = 0;
+    private int mMode = 0;
     private List<List<Note>> notePositions;
     private int noteImageSize = 42; // change to percent of fret width
     private int noteImageYOffset = 42;
     Dictionary<String, Bitmap> images;
 
-    public FullGuitarMap(Context context, Dictionary<String, Bitmap> imageSet, int frets, int strings, int key, int scale) {
+    public FullGuitarMap(Context context, Dictionary<String, Bitmap> imageSet, int frets, int strings, int key, int scale, int mode) {
         super(context);
         //mFretboard = fretboard;
         numFrets = frets;
         numStrings = strings;
         mKey = key;
         mScale = scale;
+        mMode = mode;
         images = imageSet;
         setBackgroundColor(Color.BLACK); // DOESNT WORK!!! ??
     }
@@ -54,22 +55,72 @@ public class FullGuitarMap extends View {
                 int interval = (physicalNote - mKey + 12) % 12;
 
                 int scaleDegree = 0;
-                switch (mScale) {
-                    case 0:
-                        // Diatonic
-                        scaleDegree = NotesAndScales.diatonicScale[interval];
+                switch (mMode) {
+                    case 0: // Ionian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicIonianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadIonianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicIonianScale[interval];
+                        }
                         break;
-                    case 1:
-                        // Pentatonic
-                        scaleDegree = NotesAndScales.pentatonicScale[interval];
+                    case 1: // Dorian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicDorianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadDorianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicDorianScale[interval];
+                        }
                         break;
-                    case 2:
-                        // Triad
-                        scaleDegree = NotesAndScales.triadScale[interval];
+                    case 2: // Phrygian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicPhrygianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadPhrygianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicPhrygianScale[interval];
+                        }
                         break;
-                    default:
-                        // Default to diatonic
-                        scaleDegree = NotesAndScales.diatonicScale[interval];
+                    case 3: // Lydian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicLydianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadLydianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicLydianScale[interval];
+                        }
+                        break;
+                    case 4: // Mixolydian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicMixolydianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadMixolydianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicMixolydianScale[interval];
+                        }
+                        break;
+                    case 5: // Aeolian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicAeolianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadAeolianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicAeolianScale[interval];
+                        }
+                        break;
+                    case 6: // Locrian
+                        if (mScale == 1) { // Pentatonic
+                            scaleDegree = NotesAndScales.pentatonicLocrianScale[interval];
+                        } else if (mScale == 2) { // Triad
+                            scaleDegree = NotesAndScales.triadLocrianScale[interval];
+                        } else { // Diatonic
+                            scaleDegree = NotesAndScales.diatonicLocrianScale[interval];
+                        }
+                        break;
+                    default: // Default to Ionian Diatonic
+                        scaleDegree = NotesAndScales.diatonicIonianScale[interval];
                         break;
                 }
                 strCol.add(scaleDegree);
@@ -86,13 +137,13 @@ public class FullGuitarMap extends View {
 
         // Build note objects
         // calculate note positions before drawing
-        notePositions = new ArrayList();
+        notePositions = new ArrayList<>();
         List<List<Integer>> fb = getFretboard();
 
         for(int i =0; i < numStrings; i++) {
 
             float x = (float) (i * width / numStrings + ((width / numStrings) / 2));
-            List<Note> string = new ArrayList();
+            List<Note> string = new ArrayList<>();
             //Log.d(":", "string: " + i);
             for(int j =0; j < numFrets; j++) {
                 int sn = fb.get(i).get(j);

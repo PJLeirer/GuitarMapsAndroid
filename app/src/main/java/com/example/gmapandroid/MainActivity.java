@@ -2,21 +2,26 @@ package com.example.gmapandroid;
 
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.View;
-
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.gmapandroid.databinding.ActivityMainBinding;
 
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,15 +40,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     @Override
@@ -53,18 +49,82 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    private void showMapOptionsMenu() {
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+        Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (!(currentFragment instanceof SecondFragment)) {
+            return; // Not on the SecondFragment, so do nothing
         }
 
+        SecondFragment secondFragment = (SecondFragment) currentFragment;
+        View fragmentView = secondFragment.getView();
+        if (fragmentView == null) {
+            return;
+        }
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.fretboard_menu, null);
+
+        PopupWindow popMenu = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true);
+
+        int[] settings = SettingsData.GetFretbordSettingsData();
+
+        Spinner keySpinner = popupView.findViewById(R.id.pop_key_spinner);
+        ArrayAdapter<CharSequence> keyAdapter = ArrayAdapter.createFromResource(popupView.getContext(), R.array.key_spinner_items, android.R.layout.simple_spinner_item);
+        keyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        keySpinner.setAdapter(keyAdapter);
+        keySpinner.setSelection(settings[0]);
+
+        Spinner scaleSpinner = popupView.findViewById(R.id.pop_scale_spinner);
+        ArrayAdapter<CharSequence> scaleAdapter = ArrayAdapter.createFromResource(popupView.getContext(), R.array.scale_spinner_items, android.R.layout.simple_spinner_item);
+        scaleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        scaleSpinner.setAdapter(scaleAdapter);
+        scaleSpinner.setSelection(settings[1]);
+
+        Spinner modeSpinner = popupView.findViewById(R.id.pop_mode_spinner);
+        ArrayAdapter<CharSequence> modeAdapter = ArrayAdapter.createFromResource(popupView.getContext(), R.array.mode_spinner_items, android.R.layout.simple_spinner_item);
+        modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        modeSpinner.setAdapter(modeAdapter);
+        modeSpinner.setSelection(settings[2]);
+
+        Button updateMapButton = popupView.findViewById(R.id.pop_go_button);
+        updateMapButton.setOnClickListener(v -> {
+            popMenu.dismiss();
+            int[] selectedSettings = {
+                    keySpinner.getSelectedItemPosition(),
+                    scaleSpinner.getSelectedItemPosition(),
+                    modeSpinner.getSelectedItemPosition()
+            };
+            SettingsData.SetFretboardSettings(selectedSettings[0], selectedSettings[1], selectedSettings[2]);
+
+            updateMap(selectedSettings[0], selectedSettings[1], selectedSettings[2]);
+        });
+
+        View mapContainer = fragmentView.findViewById(R.id.map_container);
+        popMenu.showAtLocation(mapContainer, Gravity.CENTER, 0, 0);
+    }
+
+    private void updateMap(int key, int scale, int mode) {
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+        Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+
+        if (currentFragment instanceof SecondFragment) {
+            ((SecondFragment) currentFragment).updateMap(key, scale, mode);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            showMapOptionsMenu();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

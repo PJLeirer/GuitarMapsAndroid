@@ -7,10 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -61,30 +57,15 @@ public class SecondFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //Fretboard fretboard = new Fretboard(22, 6, 0, 0);
-        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, 0, 0);
+        int[] settings = SettingsData.GetFretbordSettingsData();
+        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, settings[0], settings[1], settings[2]);
         binding.mapContainer.addView(guitarMap);
-
-        Spinner keySpinner = view.findViewById(R.id.key_spinner);
-        keySpinner.setAdapter(ArrayAdapter.createFromResource(getContext(), R.array.key_spinner_items, android.R.layout.simple_spinner_item));
-
-        Spinner scaleSpinner = view.findViewById(R.id.scale_spinner);
-        scaleSpinner.setAdapter(ArrayAdapter.createFromResource(getContext(), R.array.scale_spinner_items, android.R.layout.simple_spinner_item));
-
-        Button updateMapButton = view.findViewById(R.id.update_map_button);
-        updateMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateMap(keySpinner.getSelectedItemPosition(), scaleSpinner.getSelectedItemPosition());
-            }
-        });
     }
 
-    private void updateMap(int key, int scale) {
-        Log.d("Main Map", "Updating map with key " + key + " and scale " + scale);
-        //Fretboard fretboard = new Fretboard(22, 6, key, scale);
+    public void updateMap(int key, int scale, int mode) {
+        Log.d("Main Map", "Updating map with key " + key + " and scale " + scale + " and mode " + mode + ".");
         binding.mapContainer.removeView(guitarMap);
-        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, key, scale);
+        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, key, scale, mode);
         binding.mapContainer.addView(guitarMap);
     }
 
