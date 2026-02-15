@@ -7,6 +7,7 @@ public class Note {
     private String noteName;
     private int noteValue;
     private int octave;
+    private boolean isPressed = false;
 
     public Note(int x, int y, int val) {
         xPos = x;
@@ -23,5 +24,13 @@ public class Note {
 
     public int getYPos() {
         return yPos;
+    }
+
+    public boolean isPressed() {
+        return isPressed;
+    }
+
+    public void setPressed(boolean pressed) {
+        isPressed = pressed;
     }
 }

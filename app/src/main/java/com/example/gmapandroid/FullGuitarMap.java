@@ -1,13 +1,20 @@
 package com.example.gmapandroid;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.view.View;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -29,16 +36,21 @@ public class FullGuitarMap extends View {
     private int noteImageYOffset = 42;
     Dictionary<String, Bitmap> images;
 
-    public FullGuitarMap(Context context, Dictionary<String, Bitmap> imageSet, int frets, int strings, int key, int scale, int mode) {
-        super(context);
-        //mFretboard = fretboard;
-        numFrets = frets;
-        numStrings = strings;
+    public FullGuitarMap(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        setBackgroundColor(Color.BLACK);
+    }
+
+    public void setImages(Dictionary<String, Bitmap> imageSet) {
+        images = imageSet;
+    }
+
+    public void updateSettings(int key, int scale, int mode) {
         mKey = key;
         mScale = scale;
         mMode = mode;
-        images = imageSet;
-        setBackgroundColor(Color.BLACK); // DOESNT WORK!!! ??
+        buildNotePositions();
+        invalidate(); // Redraw the view with new notes
     }
 
     public List<List<Integer>> getFretboard() {
@@ -48,76 +60,44 @@ public class FullGuitarMap extends View {
             int n = NotesAndScales.defaultOpenNoteTuning[i];
 
             for (int j = 0; j < numFrets; j++) {
-                // Calculate the physical note on the fretboard, regardless of key
                 int physicalNote = (n + j) % 12;
-
-                // Calculate the note's interval relative to the current key
                 int interval = (physicalNote - mKey + 12) % 12;
-
                 int scaleDegree = 0;
                 switch (mMode) {
                     case 0: // Ionian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicIonianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadIonianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicIonianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicIonianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadIonianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicIonianScale[interval];
                         break;
                     case 1: // Dorian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicDorianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadDorianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicDorianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicDorianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadDorianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicDorianScale[interval];
                         break;
                     case 2: // Phrygian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicPhrygianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadPhrygianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicPhrygianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicPhrygianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadPhrygianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicPhrygianScale[interval];
                         break;
                     case 3: // Lydian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicLydianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadLydianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicLydianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicLydianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadLydianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicLydianScale[interval];
                         break;
                     case 4: // Mixolydian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicMixolydianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadMixolydianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicMixolydianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicMixolydianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadMixolydianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicMixolydianScale[interval];
                         break;
                     case 5: // Aeolian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicAeolianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadAeolianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicAeolianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicAeolianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadAeolianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicAeolianScale[interval];
                         break;
                     case 6: // Locrian
-                        if (mScale == 1) { // Pentatonic
-                            scaleDegree = NotesAndScales.pentatonicLocrianScale[interval];
-                        } else if (mScale == 2) { // Triad
-                            scaleDegree = NotesAndScales.triadLocrianScale[interval];
-                        } else { // Diatonic
-                            scaleDegree = NotesAndScales.diatonicLocrianScale[interval];
-                        }
+                        if (mScale == 1) scaleDegree = NotesAndScales.pentatonicLocrianScale[interval];
+                        else if (mScale == 2) scaleDegree = NotesAndScales.triadLocrianScale[interval];
+                        else scaleDegree = NotesAndScales.diatonicLocrianScale[interval];
                         break;
                     default: // Default to Ionian Diatonic
                         scaleDegree = NotesAndScales.diatonicIonianScale[interval];
@@ -130,146 +110,129 @@ public class FullGuitarMap extends View {
         return fretboard;
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        width = w;
+        height = h;
+        buildNotePositions();
+    }
+
     private void buildNotePositions() {
-
-        width = getWidth();
-        height = getHeight();
-
-        // Build note objects
-        // calculate note positions before drawing
+        if (width == 0 || height == 0) return;
         notePositions = new ArrayList<>();
         List<List<Integer>> fb = getFretboard();
-
-        for(int i =0; i < numStrings; i++) {
-
+        for(int i = 0; i < numStrings; i++) {
             float x = (float) (i * width / numStrings + ((width / numStrings) / 2));
             List<Note> string = new ArrayList<>();
-            //Log.d(":", "string: " + i);
-            for(int j =0; j < numFrets; j++) {
+            for(int j = 0; j < numFrets; j++) {
                 int sn = fb.get(i).get(j);
-                //Log.d(":", "fret: " + j + " note: " + sn);
-
                 float y = (float) (j * height / numFrets + ((height / numFrets) / 2));
                 Note note = new Note((int)x, (int)y, sn);
                 string.add(note);
-                //Log.d(":","y:" + y);
             }
             notePositions.add(string);
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            float x = event.getX();
+            float y = event.getY();
+            if (notePositions == null) return false;
+            for (List<Note> string : notePositions) {
+                for (Note note : string) {
+                    if (note.getNoteValue() > 0) {
+                        if (x > note.getXPos() - noteImageSize && x < note.getXPos() + noteImageSize &&
+                                y > note.getYPos() - noteImageSize && y < note.getYPos() + noteImageSize) {
+
+                            playNote(note);
+                            note.setPressed(true);
+                            invalidate();
+
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                note.setPressed(false);
+                                invalidate();
+                            }, 400);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public void playNote(Note note) {
+        Log.d("FullGuitarMap", "Playing note: " + note.getNoteValue());
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, width * 6);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = width * 6;
+        setMeasuredDimension(width, height);
     }
 
     @Override
     public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        // Get the width and height of the view
-        width = getWidth();
-        height = getHeight();
+        if (images == null || notePositions == null) return;
 
-        // fill background black
-        //canvas.drawColor(Color.BLACK);
         @SuppressLint("DrawAllocation")
-
         Rect srcRect = new Rect(0, 0, images.get("rosewood").getWidth(), images.get("rosewood").getHeight());
         Rect destRect = new Rect(0, 0, width, height);
         canvas.drawBitmap(images.get("rosewood"), srcRect, destRect, paint);
 
-
-
-
-        // draw headstock
         float headstocky = (int) ((height / numFrets) / 2);
         paint.setColor(Color.BLACK);
-        //canvas.drawRect(0, 0, width, (int)headstocky, paint);
-
         Rect headstockSrcRect = new Rect(0, 0, images.get("headstock").getWidth(), images.get("headstock").getHeight());
         Rect headstockDestRect = new Rect(0, 0, width, (int)headstocky);
         canvas.drawBitmap(images.get("headstock"), headstockSrcRect, headstockDestRect, paint);
 
-
-        // Draw frets
         paint.setColor(Color.WHITE);
         Rect fretSrcRect = new Rect(0, 0, images.get("fret").getWidth(), images.get("fret").getHeight());
-        for (int i = 0; i < 22; i++) {
+        for (int i = 0; i < numFrets; i++) {
             headstocky = (int) (i * height / numFrets + ((height / numFrets) / 2));
             if( i == 0) {
-                //draw nut
                 canvas.drawRect(0, (int)headstocky-24, width, (int)headstocky+6, paint);
             } else {
-                //draw fret
                 Rect fretDestRect = new Rect(0, (int)headstocky, width, (int)headstocky+8);
                 canvas.drawBitmap(images.get("fret"), fretSrcRect, fretDestRect, paint);
             }
-
         }
 
-        // Draw the guitar strings
         paint.setColor(Color.LTGRAY);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < numStrings; i++) {
             float x = (float) (i * width / numStrings + ((width / numStrings) / 2));
             canvas.drawLine(x, 0, x, height, paint);
         }
 
-
-        buildNotePositions();
-        // draw notes
         paint.setColor(Color.RED);
         paint.setTextSize(12);
         for (List<Note> string : notePositions) {
-            //Log.d("Note: ", " for each string");
             for (Note note : string) {
-                //Log.d("Note:", "for each note X:" + note.getXPos() + " - Y:" + note.getYPos());
                 if (note.getNoteValue() > 0) {
                     Bitmap noteImage;
+                    String imageSuffix = note.isPressed() ? "On" : "Off";
                     switch(note.getNoteValue()) {
-                        case 1:
-                            paint.setColor(Color.RED);
-                            noteImage = images.get("rootOff");
-                            break;
-                        case 2:
-                            paint.setColor(Color.YELLOW);
-                            noteImage = images.get("secondOff");
-                            break;
-                        case 3:
-                            paint.setColor(Color.YELLOW);
-                            noteImage = images.get("thirdOff");
-                            break;
-                        case 4:
-                            paint.setColor(Color.MAGENTA);
-                            noteImage = images.get("fourthOff");
-                            break;
-                        case 5:
-                            paint.setColor(Color.GREEN);
-                            noteImage = images.get("fifthOff");
-                            break;
-                        case 6:
-                            paint.setColor(Color.MAGENTA);
-                            noteImage = images.get("sixthOff");
-                            break;
-                        case 7:
-                            paint.setColor(Color.LTGRAY);
-                            noteImage = images.get("seventhOff");
-                            break;
-                        default:
-                            paint.setColor(Color.BLACK);
-                            noteImage = images.get("rootOff");
-                            break;
+                        case 1: noteImage = images.get("root" + imageSuffix); break;
+                        case 2: noteImage = images.get("second" + imageSuffix); break;
+                        case 3: noteImage = images.get("third" + imageSuffix); break;
+                        case 4: noteImage = images.get("fourth" + imageSuffix); break;
+                        case 5: noteImage = images.get("fifth" + imageSuffix); break;
+                        case 6: noteImage = images.get("sixth" + imageSuffix); break;
+                        case 7: noteImage = images.get("seventh" + imageSuffix); break;
+                        default: noteImage = images.get("rootOff"); break;
                     }
-                    //canvas.drawCircle(note.getXPos(), note.getYPos(), 20, paint);
+                    if (noteImage == null) continue;
                     Rect noteSrcRect = new Rect(0, 0, noteImage.getWidth(), noteImage.getHeight());
                     Rect noteDestRect = new Rect((int)note.getXPos() - (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) - (noteImageSize/2), (int)note.getXPos() + (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) + (noteImageSize/2));
                     canvas.drawBitmap(noteImage, noteSrcRect, noteDestRect, paint);
-
                 }
             }
         }
-
-        // end of drawing
     }
 }

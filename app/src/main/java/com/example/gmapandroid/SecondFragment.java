@@ -21,15 +21,21 @@ public class SecondFragment extends Fragment {
     private FragmentSecondBinding binding;
     private FullGuitarMap guitarMap;
 
-    Dictionary<String, Bitmap> images;
-
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        images = new Hashtable<>();
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        guitarMap = view.findViewById(R.id.guitar_map);
+
+        Dictionary<String, Bitmap> images = new Hashtable<>();
         images.put("rootOff", BitmapFactory.decodeResource(getResources(), R.drawable.root_red_off));
         images.put("rootOn", BitmapFactory.decodeResource(getResources(), R.drawable.root_red_on));
         images.put("secondOff", BitmapFactory.decodeResource(getResources(), R.drawable.second_yellow_off));
@@ -47,26 +53,15 @@ public class SecondFragment extends Fragment {
         images.put("rosewood", BitmapFactory.decodeResource(getResources(), R.drawable.rosewood1));
         images.put("fret", BitmapFactory.decodeResource(getResources(), R.drawable.silver_fret));
         images.put("headstock", BitmapFactory.decodeResource(getResources(), R.drawable.headstock_lower));
-
-
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-
-    }
-
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        guitarMap.setImages(images);
 
         int[] settings = SettingsData.GetFretbordSettingsData();
-        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, settings[0], settings[1], settings[2]);
-        binding.mapContainer.addView(guitarMap);
+        updateMap(settings[0], settings[1], settings[2]);
     }
 
     public void updateMap(int key, int scale, int mode) {
         Log.d("Main Map", "Updating map with key " + key + " and scale " + scale + " and mode " + mode + ".");
-        binding.mapContainer.removeView(guitarMap);
-        guitarMap = new FullGuitarMap(getContext(), images, 22, 6, key, scale, mode);
-        binding.mapContainer.addView(guitarMap);
+        guitarMap.updateSettings(key, scale, mode);
     }
 
     @Override

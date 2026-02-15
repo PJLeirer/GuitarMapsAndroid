@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             updateMap(selectedSettings[0], selectedSettings[1], selectedSettings[2]);
         });
 
-        View mapContainer = fragmentView.findViewById(R.id.map_container);
+        View mapContainer = fragmentView.findViewById(R.id.guitar_map);
         popMenu.showAtLocation(mapContainer, Gravity.CENTER, 0, 0);
     }
 
