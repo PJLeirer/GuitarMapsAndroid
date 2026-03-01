@@ -17,32 +17,32 @@ public class NotesAndScales {
             "B" // 11
     };
 
-    public static final int[] defaultOpenNoteTuning = {4, 9, 2, 7, 11, 4}; // Default, E Standard
+    public static final Integer[] defaultOpenNoteTuning = {4, 9, 2, 7, 11, 4}; // Default, E Standard
     
     // Diatonic Scales
-    public static final int[] diatonicIonianScale =     {1, 0, 2, 0, 3, 4, 0, 5, 0, 6, 0, 7};
-    public static final int[] diatonicDorianScale =     {1, 0, 2, 3, 0, 4, 0, 5, 0, 6, 7, 0};
-    public static final int[] diatonicPhrygianScale =   {1, 2, 0, 3, 0, 4, 0, 5, 6, 0, 7, 0};
-    public static final int[] diatonicLydianScale =     {1, 0, 2, 0, 3, 0, 4, 5, 0, 6, 0, 7};
-    public static final int[] diatonicMixolydianScale = {1, 0, 2, 0, 3, 4, 0, 5, 0, 6, 7, 0};
-    public static final int[] diatonicAeolianScale =    {1, 0, 2, 3, 0, 4, 0, 5, 6, 0, 7, 0};
-    public static final int[] diatonicLocrianScale =    {1, 2, 0, 3, 0, 4, 5, 0, 6, 0, 7, 0};
+    public static final Integer[] diatonicIonianScale =     {1, 0, 2, 0, 3, 4, 0, 5, 0, 6, 0, 7};
+    public static final Integer[] diatonicDorianScale =     {1, 0, 2, 3, 0, 4, 0, 5, 0, 6, 7, 0};
+    public static final Integer[] diatonicPhrygianScale =   {1, 2, 0, 3, 0, 4, 0, 5, 6, 0, 7, 0};
+    public static final Integer[] diatonicLydianScale =     {1, 0, 2, 0, 3, 0, 4, 5, 0, 6, 0, 7};
+    public static final Integer[] diatonicMixolydianScale = {1, 0, 2, 0, 3, 4, 0, 5, 0, 6, 7, 0};
+    public static final Integer[] diatonicAeolianScale =    {1, 0, 2, 3, 0, 4, 0, 5, 6, 0, 7, 0};
+    public static final Integer[] diatonicLocrianScale =    {1, 2, 0, 3, 0, 4, 5, 0, 6, 0, 7, 0};
 
     // Pentatonic Scales
-    public static final int[] pentatonicIonianScale =     {1, 0, 2, 0, 3, 0, 0, 5, 0, 6, 0, 0};
-    public static final int[] pentatonicDorianScale =     {1, 0, 2, 3, 0, 4, 0, 5, 0, 0, 7, 0};
-    public static final int[] pentatonicPhrygianScale =   {1, 0, 0, 3, 0, 4, 0, 5, 6, 0, 7, 0};
-    public static final int[] pentatonicLydianScale =     {1, 0, 2, 0, 3, 0, 4, 5, 0, 6, 0, 0};
-    public static final int[] pentatonicMixolydianScale = {1, 0, 2, 0, 3, 0, 0, 5, 0, 0, 7, 0};
-    public static final int[] pentatonicAeolianScale =    {1, 0, 0, 3, 0, 4, 0, 5, 0, 0, 7, 0};
-    public static final int[] pentatonicLocrianScale =    {1, 0, 0, 3, 0, 4, 5, 0, 0, 0, 7, 0};
+    public static final Integer[] pentatonicIonianScale =     {1, 0, 2, 0, 3, 0, 0, 5, 0, 6, 0, 0};
+    public static final Integer[] pentatonicDorianScale =     {1, 0, 2, 3, 0, 4, 0, 5, 0, 0, 7, 0};
+    public static final Integer[] pentatonicPhrygianScale =   {1, 0, 0, 3, 0, 4, 0, 5, 6, 0, 7, 0};
+    public static final Integer[] pentatonicLydianScale =     {1, 0, 2, 0, 3, 0, 4, 5, 0, 6, 0, 0};
+    public static final Integer[] pentatonicMixolydianScale = {1, 0, 2, 0, 3, 0, 0, 5, 0, 0, 7, 0};
+    public static final Integer[] pentatonicAeolianScale =    {1, 0, 0, 3, 0, 4, 0, 5, 0, 0, 7, 0};
+    public static final Integer[] pentatonicLocrianScale =    {1, 0, 0, 3, 0, 4, 5, 0, 0, 0, 7, 0};
 
     // Triad Scales
-    public static final int[] triadIonianScale =      {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadDorianScale =      {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadPhrygianScale =    {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadLydianScale =      {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadMixolydianScale =  {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadAeolianScale =     {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
-    public static final int[] triadLocrianScale =     {1, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0, 0};
+    public static final Integer[] triadIonianScale =      {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadDorianScale =      {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadPhrygianScale =    {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadLydianScale =      {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadMixolydianScale =  {1, 0, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadAeolianScale =     {1, 0, 0, 3, 0, 0, 0, 5, 0, 0, 0, 0};
+    public static final Integer[] triadLocrianScale =     {1, 0, 0, 3, 0, 0, 5, 0, 0, 0, 0, 0};
 }

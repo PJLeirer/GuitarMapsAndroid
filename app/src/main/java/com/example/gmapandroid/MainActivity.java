@@ -27,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+    private NavHostFragment navHostFragment;
+    private Menu mMenu;
+    public Menu getMenu() {
+        return mMenu;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,28 +45,36 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        // set initial menu state
+        menu.findItem(R.id.action_fretboard_menu).setVisible(false);
+        menu.findItem(R.id.action_show_instructions).setVisible(true);
+        menu.findItem(R.id.action_show_about).setVisible(true);
+        // set menu reference
+        mMenu = menu;
         return true;
     }
 
     private void showMapOptionsMenu() {
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+        // make sure fretboard fragment is visible
         Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-
         if (!(currentFragment instanceof SecondFragment)) {
-            return; // Not on the SecondFragment, so do nothing
+            return;
         }
-
         SecondFragment secondFragment = (SecondFragment) currentFragment;
         View fragmentView = secondFragment.getView();
         if (fragmentView == null) {
             return;
         }
+
+
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.fretboard_menu, null);
@@ -92,37 +105,51 @@ public class MainActivity extends AppCompatActivity {
         modeSpinner.setAdapter(modeAdapter);
         modeSpinner.setSelection(settings[2]);
 
+        Spinner positionSpinner = popupView.findViewById(R.id.pop_position_spinner);
+        ArrayAdapter<CharSequence> positionAdapter = ArrayAdapter.createFromResource(popupView.getContext(), R.array.position_spinner_items, android.R.layout.simple_spinner_item);
+        positionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        positionSpinner.setAdapter(positionAdapter);
+        positionSpinner.setSelection(settings[3]);
+
         Button updateMapButton = popupView.findViewById(R.id.pop_go_button);
         updateMapButton.setOnClickListener(v -> {
             popMenu.dismiss();
             int[] selectedSettings = {
                     keySpinner.getSelectedItemPosition(),
                     scaleSpinner.getSelectedItemPosition(),
-                    modeSpinner.getSelectedItemPosition()
+                    modeSpinner.getSelectedItemPosition(),
+                    positionSpinner.getSelectedItemPosition()
             };
-            SettingsData.SetFretboardSettings(selectedSettings[0], selectedSettings[1], selectedSettings[2]);
+            SettingsData.SetFretboardSettings(selectedSettings[0], selectedSettings[1], selectedSettings[2], selectedSettings[3]);
 
-            updateMap(selectedSettings[0], selectedSettings[1], selectedSettings[2]);
+            updateMap(selectedSettings[0], selectedSettings[1], selectedSettings[2], selectedSettings[3]);
         });
 
         View mapContainer = fragmentView.findViewById(R.id.guitar_map);
         popMenu.showAtLocation(mapContainer, Gravity.CENTER, 0, 0);
     }
 
-    private void updateMap(int key, int scale, int mode) {
+    private void updateMap(int key, int scale, int mode, int pos) {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-
         if (currentFragment instanceof SecondFragment) {
-            ((SecondFragment) currentFragment).updateMap(key, scale, mode);
+            ((SecondFragment) currentFragment).updateMap(key, scale, mode, pos);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_fretboard_menu) {
             showMapOptionsMenu();
+            return true;
+        } else if (id == R.id.action_show_instructions) {
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.action_FirstFragment_to_InstructionsFragment);
+            return true;
+        } else if (id == R.id.action_show_about) {
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.action_FirstFragment_to_AboutFragment);
             return true;
         }
         return super.onOptionsItemSelected(item);

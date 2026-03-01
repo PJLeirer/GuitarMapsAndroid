@@ -18,6 +18,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         >
+
+        <!-- Key -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,6 +63,7 @@
             />
 
 
+        <!-- Scale -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -103,6 +106,7 @@
             />
 
 
+        <!-- Mode -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -145,6 +149,45 @@
             />
 
 
+        <!-- Positiom -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Position: "
+            />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:layout_weight=".28"
+            android:background="@drawable/spinner_border"
+            android:orientation="horizontal">
+            <Spinner
+                android:id="@+id/pop_position_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
+                android:spinnerMode="dropdown" />
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:src="@drawable/drop" />
+        </RelativeLayout>
+        <View
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            />
+
+
+        <!-- Update Button -->
         <Button
             android:id="@+id/pop_go_button"
             android:layout_width="wrap_content"

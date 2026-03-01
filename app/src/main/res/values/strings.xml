@@ -1,9 +1,18 @@
 <resources>
     <string name="app_name">GmapAndroid</string>
-    <string name="action_settings">Settings</string>
+
+    <!-- Strings for menu options -->
+    <string name="action_main_settings">Fretboard Menu</string>
+    <string name="item_show_instructions">Instructions</string>
+    <string name="item_show_about">About"></string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
+    <string name="instructions_title">Instructions</string>
+    <string name="about_title">About </string>
+
+    <!-- Strings for buttons -->
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
@@ -46,6 +55,15 @@
         <item>Mixolydian</item>
         <item>Aeolian (Minor)</item>
         <item>Locrian</item>
+    </string-array>
+
+    <string-array name="position_spinner_items">
+        <item>Whole Fretboard</item>
+        <item>Position 1</item>
+        <item>Position 2</item>
+        <item>Position 3</item>
+        <item>Position 4</item>
+        <item>Position 5</item>
     </string-array>
 
 

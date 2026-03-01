@@ -14,15 +14,39 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_InstructionsFragment"
+            app:destination="@id/InstructionsFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_AboutFragment"
+            app:destination="@id/AboutFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.example.gmapandroid.SecondFragment"
         android:label="@string/map_main_title"
         tools:layout="@layout/fragment_second">
-
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/InstructionsFragment"
+        android:name="com.example.gmapandroid.InstructionsFragment"
+        android:label="@string/instructions_title"
+        tools:layout="@layout/fragment_instructions">
+        <action
+            android:id="@+id/action_InstructionsFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/AboutFragment"
+        android:name="com.example.gmapandroid.AboutFragment"
+        android:label="@string/about_title"
+        tools:layout="@layout/fragment_about">
+        <action
+            android:id="@+id/action_InstructionsFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>

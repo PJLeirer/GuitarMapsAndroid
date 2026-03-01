@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,6 +21,7 @@ public class SecondFragment extends Fragment {
 
     private FragmentSecondBinding binding;
     private FullGuitarMap guitarMap;
+    private Menu mainMenu;
 
     @Override
     public View onCreateView(
@@ -27,11 +29,19 @@ public class SecondFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         binding = FragmentSecondBinding.inflate(inflater, container, false);
+        mainMenu = ((MainActivity)getActivity()).getMenu();
+        if(mainMenu != null) {
+            mainMenu.findItem(R.id.action_fretboard_menu).setVisible(true);
+            mainMenu.findItem(R.id.action_show_instructions).setVisible(false);
+            mainMenu.findItem(R.id.action_show_about).setVisible(false);
+        }
         return binding.getRoot();
     }
 
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
 
         guitarMap = view.findViewById(R.id.guitar_map);
 
@@ -56,12 +66,12 @@ public class SecondFragment extends Fragment {
         guitarMap.setImages(images);
 
         int[] settings = SettingsData.GetFretbordSettingsData();
-        updateMap(settings[0], settings[1], settings[2]);
+        updateMap(settings[0], settings[1], settings[2], settings[3]);
     }
 
-    public void updateMap(int key, int scale, int mode) {
-        Log.d("Main Map", "Updating map with key " + key + " and scale " + scale + " and mode " + mode + ".");
-        guitarMap.updateSettings(key, scale, mode);
+    public void updateMap(int key, int scale, int mode, int position) {
+        Log.d("Main Map", "Updating map with key " + key + " and scale " + scale + " and mode " + mode + " and position " + position);
+        guitarMap.updateSettings(key, scale, mode, position);
     }
 
     @Override
