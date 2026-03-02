@@ -63,6 +63,18 @@ public class SecondFragment extends Fragment {
         images.put("rosewood", BitmapFactory.decodeResource(getResources(), R.drawable.rosewood1));
         images.put("fret", BitmapFactory.decodeResource(getResources(), R.drawable.silver_fret));
         images.put("headstock", BitmapFactory.decodeResource(getResources(), R.drawable.headstock_lower));
+        images.put("inlayDot", BitmapFactory.decodeResource(getResources(), R.drawable.mother_of_pearl_inlay_dot));
+        images.put("dot_1", BitmapFactory.decodeResource(getResources(), R.drawable.dot_1));
+        images.put("dot_2", BitmapFactory.decodeResource(getResources(), R.drawable.dot_2));
+        images.put("dot_3", BitmapFactory.decodeResource(getResources(), R.drawable.dot_3));
+        images.put("dot_5", BitmapFactory.decodeResource(getResources(), R.drawable.dot_5));
+        images.put("dot_7", BitmapFactory.decodeResource(getResources(), R.drawable.dot_7));
+        images.put("dot_9", BitmapFactory.decodeResource(getResources(), R.drawable.dot_9));
+        images.put("dot_15", BitmapFactory.decodeResource(getResources(), R.drawable.dot_15));
+        images.put("dot_17", BitmapFactory.decodeResource(getResources(), R.drawable.dot_17));
+        images.put("dot_19", BitmapFactory.decodeResource(getResources(), R.drawable.dot_19));
+
+
         guitarMap.setImages(images);
 
         int[] settings = SettingsData.GetFretbordSettingsData();

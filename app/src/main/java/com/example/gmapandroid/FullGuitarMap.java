@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -24,24 +25,26 @@ import java.util.List;
 
 public class FullGuitarMap extends View {
 
-    private Paint paint = new Paint();
+    private Paint paint;
     private int width;
     private int height;
-    private int numFrets = 22;
-    private int numStrings = 6;
+    private final int numFrets = 22;
+    private final int numStrings = 6;
     private int mKey = 0;
     private int mScale = 0;
     private int mMode = 0;
     private int mPosition = 0;
     private List<List<Note>> notePositions;
-    private int noteImageSize = 42; // change to percent of fret width
-    private int noteImageYOffset = 42;
+    private final int noteImageSize = 42; // change to percent of fret width
+    private final int dotImageSize = 60;
+    private final int noteImageYOffset = 42;
     Dictionary<String, Bitmap> images;
     Integer[] currentScale;
 
     public FullGuitarMap(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setBackgroundColor(Color.BLACK);
+        paint = new Paint();
     }
 
     public void setImages(Dictionary<String, Bitmap> imageSet) {
@@ -218,34 +221,75 @@ public class FullGuitarMap extends View {
     }
 
     @Override
-    public void onDraw(Canvas canvas) {
+    public void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         if (images == null || notePositions == null) return;
 
         // draw fingerboard
         @SuppressLint("DrawAllocation")
         Rect srcRect = new Rect(0, 0, images.get("rosewood").getWidth(), images.get("rosewood").getHeight());
-        Rect destRect = new Rect(0, 0, width, height);
+        @SuppressLint("DrawAllocation") Rect destRect = new Rect(0, 0, width, height);
         canvas.drawBitmap(images.get("rosewood"), srcRect, destRect, paint);
 
         // draw headstock
         float headstocky = (int) ((height / numFrets) / 2);
         paint.setColor(Color.BLACK);
-        Rect headstockSrcRect = new Rect(0, 0, images.get("headstock").getWidth(), images.get("headstock").getHeight());
-        Rect headstockDestRect = new Rect(0, 0, width, (int)headstocky);
+        @SuppressLint("DrawAllocation") Rect headstockSrcRect = new Rect(0, 0, images.get("headstock").getWidth(), images.get("headstock").getHeight());
+        @SuppressLint("DrawAllocation") Rect headstockDestRect = new Rect(0, 0, width, (int)headstocky);
         canvas.drawBitmap(images.get("headstock"), headstockSrcRect, headstockDestRect, paint);
 
         // draw frets
         paint.setColor(Color.WHITE);
-        Rect fretSrcRect = new Rect(0, 0, images.get("fret").getWidth(), images.get("fret").getHeight());
+        @SuppressLint("DrawAllocation") Rect inlaySrcRect = new Rect(0, 0, images.get("inlayDot").getWidth(), images.get("inlayDot").getHeight());
+        @SuppressLint("DrawAllocation") Rect fretSrcRect = new Rect(0, 0, images.get("fret").getWidth(), images.get("fret").getHeight());
+        int lastFretY = 0;
         for (int i = 0; i < numFrets; i++) {
             headstocky = (int) (i * height / numFrets + ((height / numFrets) / 2));
             if( i == 0) {
                 canvas.drawRect(0, (int)headstocky-24, width, (int)headstocky+6, paint);
             } else {
-                Rect fretDestRect = new Rect(0, (int)headstocky, width, (int)headstocky+8);
+                @SuppressLint("DrawAllocation") Rect fretDestRect = new Rect(0, (int)headstocky, width, (int)headstocky+8);
                 canvas.drawBitmap(images.get("fret"), fretSrcRect, fretDestRect, paint);
             }
+            //inlay dots
+            if(i == 3 || i == 5 || i == 7 || i == 9 || i == 12 || i == 15 || i == 17 || i == 19 || i == 21) {
+                Log.d("FullGuitarMap", "Drawing inlay dot at fret " + i);
+                int dotY = (int)(headstocky - ((headstocky - lastFretY)/2));
+                int dotX = width/2;
+                if(i == 12) {
+                    @SuppressLint("DrawAllocation") Rect inlayDestRect1 = new Rect(
+                            dotX - (dotImageSize/2) - (width/3),
+                            dotY - (dotImageSize/2),
+                            dotX + (dotImageSize/2) - (width/3),
+                            dotY + (dotImageSize/2)
+                    );
+                    canvas.drawBitmap(images.get("dot_1"), inlaySrcRect, inlayDestRect1, paint);
+                    @SuppressLint("DrawAllocation") Rect inlayDestRect2 = new Rect(
+                            dotX - (dotImageSize/2) + (width/3),
+                            dotY - (dotImageSize/2),
+                            dotX + (dotImageSize/2) + (width/3),
+                            dotY + (dotImageSize/2)
+                    );
+                    canvas.drawBitmap(images.get("dot_2"), inlaySrcRect, inlayDestRect2, paint);
+                } else {
+                    @SuppressLint("DrawAllocation") Rect inlayDestRect = new Rect(
+                            dotX - (dotImageSize/2),
+                            dotY - (dotImageSize/2),
+                            dotX + (dotImageSize/2),
+                            dotY + (dotImageSize/2)
+                    );
+                    String imgName = "dot_" + i;
+                    Bitmap img = images.get(imgName);
+                    if(img == null) {
+                        img = images.get("inlayDot");
+                    }
+                    Log.d("FullGuitarMap", "Drawing inlay dot_" + i );
+                    canvas.drawBitmap(img, inlaySrcRect, inlayDestRect, paint);
+                }
+
+                //canvas.drawRect(0, (int)headstocky-24, width, (int)headstocky+6, paint);
+            }
+            lastFretY = (int)headstocky;
         }
 
         // draw strings
@@ -274,8 +318,8 @@ public class FullGuitarMap extends View {
                         default: noteImage = images.get("rootOff"); break;
                     }
                     if (noteImage == null) continue;
-                    Rect noteSrcRect = new Rect(0, 0, noteImage.getWidth(), noteImage.getHeight());
-                    Rect noteDestRect = new Rect((int)note.getXPos() - (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) - (noteImageSize/2), (int)note.getXPos() + (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) + (noteImageSize/2));
+                    @SuppressLint("DrawAllocation") Rect noteSrcRect = new Rect(0, 0, noteImage.getWidth(), noteImage.getHeight());
+                    @SuppressLint("DrawAllocation") Rect noteDestRect = new Rect((int)note.getXPos() - (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) - (noteImageSize/2), (int)note.getXPos() + (noteImageSize/2), (int)(note.getYPos() - noteImageYOffset) + (noteImageSize/2));
                     canvas.drawBitmap(noteImage, noteSrcRect, noteDestRect, paint);
                 }
             }
