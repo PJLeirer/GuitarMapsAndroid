@@ -38,13 +38,22 @@ public class FirstFragment extends Fragment {
         mainMenu = ((MainActivity)getActivity()).getMenu();
         if(mainMenu != null) {
             mainMenu.findItem(R.id.action_fretboard_menu).setVisible(false);
-            mainMenu.findItem(R.id.action_show_instructions).setVisible(true);
-            mainMenu.findItem(R.id.action_show_about).setVisible(true);
+            mainMenu.findItem(R.id.action_show_reference_card).setVisible(false);
+            mainMenu.findItem(R.id.action_show_instructions).setVisible(false);
+            mainMenu.findItem(R.id.action_show_about).setVisible(false);
         }
 
-        binding.buttonFirst.setOnClickListener(v ->
+        binding.btnGotoMap.setOnClickListener(v ->
                 NavHostFragment.findNavController(FirstFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
+        );
+        binding.btnGotoInstructions.setOnClickListener(v ->
+                NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_InstructionsFragment)
+        );
+        binding.btnGotoAbout.setOnClickListener(v ->
+                NavHostFragment.findNavController(FirstFragment.this)
+                        .navigate(R.id.action_FirstFragment_to_AboutFragment)
         );
     }
 

@@ -5,12 +5,28 @@
     <string name="action_main_settings">Fretboard Menu</string>
     <string name="item_show_instructions">Instructions</string>
     <string name="item_show_about">About"></string>
+    <string name="action_show_reference_card">Reference Card</string>
+
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="instructions_title">Instructions</string>
     <string name="about_title">About </string>
+
+    <!-- Strings for Instructions -->
+    <string name="instructions_text">
+        The notes on the fretboard are color coded to represent it\'s number on the scale.\n\n
+        This is the major diatonic scale with numbers and associated colors, starting from the root note(1) to the root note of the next octave.
+    </string>
+    <string name="instructions_cmajor_note_letters">
+        Here are the notes and spacing for C major diatonic scale.
+    </string>
+
+    <!-- Strings for About -->
+    <string name="about_text">
+        This is an open source project to display notes on a guitar fretboard for different scales.
+    </string>
 
     <!-- Strings for buttons -->
     <string name="next">Next</string>
@@ -20,10 +36,9 @@
     <string name="map_main_title">Main Map</string>
 
     <string name="goto_main_map">Main Map</string>
+    <string name="goto_instructions">Instructions</string>
+    <string name="goto_about">About</string>
 
-    <string name="lorem_ipsum">
-        Map canvas will go here
-    </string>
     <string name="update_map_button_text">Go</string>
 
     <string-array name="key_spinner_items">

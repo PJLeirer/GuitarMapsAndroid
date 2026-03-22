@@ -61,63 +61,45 @@ public class FullGuitarMap extends View {
     }
 
     private void setCurrentScale() {
-        Integer[] scale;
-        switch (mMode) {
-            case 0: // Ionian
-                if (mScale == 1) scale = NotesAndScales.pentatonicIonianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadIonianScale;
-                else scale = NotesAndScales.diatonicIonianScale;
-                break;
-            case 1: // Dorian
-                if (mScale == 1) scale = NotesAndScales.pentatonicDorianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadDorianScale;
-                else scale = NotesAndScales.diatonicDorianScale;
-                break;
-            case 2: // Phrygian
-                if (mScale == 1) scale = NotesAndScales.pentatonicPhrygianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadPhrygianScale;
-                else scale = NotesAndScales.diatonicPhrygianScale;
-                break;
-            case 3: // Lydian
-                if (mScale == 1) scale = NotesAndScales.pentatonicLydianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadLydianScale;
-                else scale = NotesAndScales.diatonicLydianScale;
-                break;
-            case 4: // Mixolydian
-                if (mScale == 1) scale = NotesAndScales.pentatonicMixolydianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadMixolydianScale;
-                else scale = NotesAndScales.diatonicMixolydianScale;
-                break;
-            case 5: // Aeolian
-                if (mScale == 1) scale = NotesAndScales.pentatonicAeolianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadAeolianScale;
-                else scale = NotesAndScales.diatonicAeolianScale;
-                break;
-            case 6: // Locrian
-                if (mScale == 1) scale = NotesAndScales.pentatonicLocrianScale;
-                else if (mScale == 2) scale = NotesAndScales.triadLocrianScale;
-                else scale = NotesAndScales.diatonicLocrianScale;
-                break;
-            default: // Default to Ionian Diatonic
-                scale = NotesAndScales.diatonicIonianScale;
-                break;
+        Integer[] baseScale;
+        if (mScale == 1) {
+            baseScale = NotesAndScales.majorPentatonicScale;
+        } else if (mScale == 2) {
+            baseScale = NotesAndScales.majorTriadScale;
+        } else {
+            baseScale = NotesAndScales.majorDiatonicScale;
         }
-        currentScale = scale;
+
+        int offset = NotesAndScales.modeOffsets[mMode];
+        currentScale = new Integer[12];
+        Arrays.fill(currentScale, 0);
+
+        for (int i = 0; i < 12; i++) {
+            int baseInterval = (i - offset + 12) % 12;
+            int scaleDegree = baseScale[baseInterval];
+            if (scaleDegree > 0) {
+                // Adjust scale degree relative to the new root (mode root)
+                // This is a bit tricky: we want the mode's root to be '1'
+                // The original scale degree at baseInterval is baseScale[baseInterval]
+                // The root of the mode was the 'offset' interval in the original scale.
+                int rootDegree = baseScale[0]; // always 1 for Major
+                // For modes, we often just want to know if the note is in the scale.
+                // If you want correct modal degrees (1, 2, 3...), we'd need to re-index.
+                // For now, let's just mark it as "in scale" using the relative degree.
+                
+                // Better: find the degree of the mode's root in the base scale
+                // and subtract it (modularly) to get the modal degree.
+                // But the degrees are 1-based and non-sequential in the array.
+                
+                // Simpler: Just use the original degree value for now if it's non-zero.
+                // If you want the root of the mode to always be '1', we'll need a mapping.
+                currentScale[i] = scaleDegree; 
+            }
+        }
     }
 
-    private String getNoteName(int noteValue) {
-        String n = "";
-        // get the note position in currentsCale
-        int pos = 0;
-        try {
-            pos = Arrays.asList(currentScale).indexOf(noteValue);
-            n = NotesAndScales.noteNames[pos];
-        } catch (Exception e) {
-            Log.d("FullGuitarMap", "Error getting note name from value... " + noteValue + ", and pos: " + pos);
-        }
-        //int index = Arrays.asList(currentScale).indexOf(noteValue);
-
-        return n;
+    private String getNoteName(int noteIndex) {
+        return NotesAndScales.noteNames[noteIndex % 12];
     }
 
     public List<List<Integer>> getFretboard() {
@@ -130,9 +112,7 @@ public class FullGuitarMap extends View {
             for (int j = 0; j < numFrets; j++) {
                 int physicalNote = (n + j) % 12;
                 int interval = (physicalNote - mKey + 12) % 12;
-                int scaleDegree = 0;
-                scaleDegree = currentScale[interval];
-                strCol.add(scaleDegree);
+                strCol.add(currentScale[interval]);
             }
             fretboard.add(strCol);
         }
@@ -159,18 +139,13 @@ public class FullGuitarMap extends View {
             int openNote = NotesAndScales.defaultOpenNoteTuning[i];
 
             for(int j = 0; j < numFrets; j++) {
-                int physicalNote = (openNote + j);
-                int octave = openStringOctaves[i] + (physicalNote / 12);
+                int physicalNoteTotal = (openNote + j);
+                int octave = openStringOctaves[i] + (physicalNoteTotal / 12);
                 int sn = fb.get(i).get(j);
-                // get note name
-                String noteName;
-                if(sn !=0) {
-                    noteName = getNoteName(sn-1);
-                } else {
-                    noteName = "";
-                }
-                // get note value
-                int noteValue = sn;
+                
+                int noteIndex = physicalNoteTotal % 12;
+                String noteName = getNoteName(noteIndex);
+                
                 float y = (float) (j * height / numFrets + ((height / numFrets) / 2));
                 Note note = new Note((int)x, (int)y, sn, noteName, octave, i);
                 string.add(note);
@@ -190,7 +165,7 @@ public class FullGuitarMap extends View {
                 for (Note note : string) {
                     if (note.getNoteValue() > 0) {
                         if (x > note.getXPos() - noteImageSize && x < note.getXPos() + noteImageSize &&
-                                y > note.getYPos() - noteImageSize && y < note.getYPos() + noteImageSize) {
+                                y > (note.getYPos() - noteImageYOffset) - noteImageSize && y < (note.getYPos() - noteImageYOffset) + noteImageSize) {
 
                             note.playNote();
                             note.setPressed(true);
@@ -253,7 +228,6 @@ public class FullGuitarMap extends View {
             }
             //inlay dots
             if(i == 3 || i == 5 || i == 7 || i == 9 || i == 12 || i == 15 || i == 17 || i == 19 || i == 21) {
-                Log.d("FullGuitarMap", "Drawing inlay dot at fret " + i);
                 int dotY = (int)(headstocky - ((headstocky - lastFretY)/2));
                 int dotX = width/2;
                 if(i == 12) {
@@ -263,14 +237,14 @@ public class FullGuitarMap extends View {
                             dotX + (dotImageSize/2) - (width/3),
                             dotY + (dotImageSize/2)
                     );
-                    canvas.drawBitmap(images.get("dot_1"), inlaySrcRect, inlayDestRect1, paint);
+                    canvas.drawBitmap(images.get("inlayDot"), inlaySrcRect, inlayDestRect1, paint);
                     @SuppressLint("DrawAllocation") Rect inlayDestRect2 = new Rect(
                             dotX - (dotImageSize/2) + (width/3),
                             dotY - (dotImageSize/2),
                             dotX + (dotImageSize/2) + (width/3),
                             dotY + (dotImageSize/2)
                     );
-                    canvas.drawBitmap(images.get("dot_2"), inlaySrcRect, inlayDestRect2, paint);
+                    canvas.drawBitmap(images.get("inlayDot"), inlaySrcRect, inlayDestRect2, paint);
                 } else {
                     @SuppressLint("DrawAllocation") Rect inlayDestRect = new Rect(
                             dotX - (dotImageSize/2),
@@ -278,16 +252,8 @@ public class FullGuitarMap extends View {
                             dotX + (dotImageSize/2),
                             dotY + (dotImageSize/2)
                     );
-                    String imgName = "dot_" + i;
-                    Bitmap img = images.get(imgName);
-                    if(img == null) {
-                        img = images.get("inlayDot");
-                    }
-                    Log.d("FullGuitarMap", "Drawing inlay dot_" + i );
-                    canvas.drawBitmap(img, inlaySrcRect, inlayDestRect, paint);
+                    canvas.drawBitmap(images.get("inlayDot"), inlaySrcRect, inlayDestRect, paint);
                 }
-
-                //canvas.drawRect(0, (int)headstocky-24, width, (int)headstocky+6, paint);
             }
             lastFretY = (int)headstocky;
         }

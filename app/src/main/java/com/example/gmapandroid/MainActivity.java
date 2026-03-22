@@ -20,8 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,11 +57,45 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         // set initial menu state
         menu.findItem(R.id.action_fretboard_menu).setVisible(false);
-        menu.findItem(R.id.action_show_instructions).setVisible(true);
-        menu.findItem(R.id.action_show_about).setVisible(true);
+        menu.findItem(R.id.action_show_reference_card).setVisible(false);
+        menu.findItem(R.id.action_show_instructions).setVisible(false);
+        menu.findItem(R.id.action_show_about).setVisible(false);
         // set menu reference
         mMenu = menu;
         return true;
+    }
+
+    private void showReferenceCard() {
+        // show anywhere, attach to any current fragment
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
+        Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+        View fragmentView = currentFragment.getView();
+
+        //create popup window
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.reference_card, null);
+
+        LinearLayout cardLayout = popupView.findViewById(R.id.reference_card_layout);
+        ReferenceCard refCard = new ReferenceCard(this);
+
+        PopupWindow popReferenceCard = new PopupWindow(
+                popupView,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true);
+
+        // add content to popup window
+        /*
+        View card = popupView.findViewById(R.id.reference_card_layout);
+        TextView title = popupView.findViewById(R.id.reference_card_title);
+        TextView info = popupView.findViewById(R.id.reference_card_info);
+        title.setText("References");
+        info.setText("updated info text");
+        */
+        // show popup window
+
+
+        popReferenceCard.showAtLocation(fragmentView, Gravity.CENTER, 0, 0);
     }
 
     private void showMapOptionsMenu() {
@@ -142,6 +178,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_fretboard_menu) {
             showMapOptionsMenu();
+            return true;
+        } else if(id == R.id.action_show_reference_card) {
+            showReferenceCard();
             return true;
         } else if (id == R.id.action_show_instructions) {
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

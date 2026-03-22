@@ -32,6 +32,7 @@ public class AboutFragment extends Fragment {
         mainMenu = ((MainActivity) getActivity()).getMenu();
         if (mainMenu != null) {
             mainMenu.findItem(R.id.action_fretboard_menu).setVisible(false);
+            mainMenu.findItem(R.id.action_show_reference_card).setVisible(false);
             mainMenu.findItem(R.id.action_show_instructions).setVisible(false);
             mainMenu.findItem(R.id.action_show_about).setVisible(false);
         }
